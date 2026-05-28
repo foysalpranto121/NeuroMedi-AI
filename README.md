@@ -44,7 +44,7 @@ cd NeuroMedi-AI
 ## 2️⃣ Create Conda Environment
 
 ```bash
-conda create -n neuromedi python=3.10 -y
+conda create -n neuromedi python=3.11
 ```
 
 Activate the environment:
