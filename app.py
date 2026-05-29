@@ -34,10 +34,10 @@ docsearch = PineconeVectorStore.from_existing_index(
 
 
 
-retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":3})
+retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":2})
 
 
-chatModel = ChatOpenAI(model="gpt-4o")
+chatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
@@ -47,6 +47,9 @@ prompt = ChatPromptTemplate.from_messages(
 
 question_answer_chain = create_stuff_documents_chain(chatModel, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+
+# Store conversation history in memory
+conversation_history = {}
 
 
 
@@ -58,11 +61,45 @@ def index():
 @app.route("/get", methods=["GET", "POST"])
 def chat():
     msg = request.form["msg"]
-    input = msg
-    print(input)
-    response = rag_chain.invoke({"input": msg})
-    print("Response : ", response["answer"])
-    return str(response["answer"])
+    session_id = request.form.get("session_id", "default")
+    
+    # Get or create conversation history for this session
+    if session_id not in conversation_history:
+        conversation_history[session_id] = []
+    
+    # Format conversation history for the prompt
+    history_text = ""
+    for i, (user_msg, bot_response) in enumerate(conversation_history[session_id][-6:]):  # Keep last 6 turns
+        history_text += f"User: {user_msg}\nAssistant: {bot_response}\n"
+    
+    print(f"Input: {msg}")
+    print(f"History: {history_text}")
+    
+    # Invoke RAG chain with conversation history
+    response = rag_chain.invoke({
+        "input": msg,
+        "chat_history": history_text
+    })
+    
+    answer = response["answer"]
+    print(f"Response: {answer}")
+    
+    # Update conversation history
+    conversation_history[session_id].append((msg, answer))
+    
+    # Limit history to last 10 turns to prevent memory issues
+    if len(conversation_history[session_id]) > 10:
+        conversation_history[session_id] = conversation_history[session_id][-10:]
+    
+    return str(answer)
+
+
+@app.route("/clear", methods=["POST"])
+def clear_chat():
+    session_id = request.form.get("session_id", "default")
+    if session_id in conversation_history:
+        del conversation_history[session_id]
+    return jsonify({"status": "success"})
 
 
 if __name__ == '__main__':

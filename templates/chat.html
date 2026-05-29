@@ -89,6 +89,7 @@
 
 <script>
 let dark = false;
+let sessionId = Date.now().toString(); // Unique session ID for conversation history
 const ladySvg = `<svg viewBox="0 0 44 48" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="44" height="48" fill="#fce7f3"/><ellipse cx="22" cy="16" rx="10" ry="11" fill="#fdbcb4"/><path d="M12 14 Q10 6 22 5 Q34 4 32 14" fill="#5b21b6"/><ellipse cx="22" cy="15" rx="10.5" ry="5" fill="#5b21b6"/><path d="M15 14 Q13 8 22 7 Q31 6 29 14" fill="#7c3aed"/><circle cx="17" cy="17" r="1.2" fill="#1e1b4b"/><circle cx="27" cy="17" r="1.2" fill="#1e1b4b"/><circle cx="17.4" cy="16.6" r="0.4" fill="#fff"/><circle cx="27.4" cy="16.6" r="0.4" fill="#fff"/><ellipse cx="16" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/><ellipse cx="28" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/><path d="M19.5 21 Q22 23 24.5 21" stroke="#c4547a" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M12 27 Q10 40 5 48 L39 48 Q34 40 32 27 Q27 30 22 30 Q17 30 12 27Z" fill="#7c3aed"/><rect x="18" y="27" width="8" height="5" rx="2" fill="#fdbcb4"/><path d="M16 30 Q22 34 28 30" fill="#6d28d9"/></svg>`;
 
 function toggleTheme() {
@@ -171,7 +172,7 @@ async function sendMessage() {
     const res = await fetch('/get', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'msg=' + encodeURIComponent(text)
+      body: 'msg=' + encodeURIComponent(text) + '&session_id=' + encodeURIComponent(sessionId)
     });
     const data = await res.text();
     removeTyping();
@@ -184,6 +185,13 @@ async function sendMessage() {
 
 function clearChat() {
   colorIdx = 0;
+  // Clear backend conversation history
+  fetch('/clear', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'session_id=' + encodeURIComponent(sessionId)
+  }).catch(e => console.error('Failed to clear backend history:', e));
+  sessionId = Date.now().toString(); // Generate new session ID
   document.getElementById('messages').innerHTML = `<div class="welcome" id="welcome"><div class="wicons"><div class="wicon purple"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="wicon teal"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="wicon pink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div></div><h3>Hi, I'm Dr. Kuttu!</h3><p>Your AI medical assistant. Ask me about symptoms,<br>medications, or any health concerns.</p></div>`;
 }
 </script>
