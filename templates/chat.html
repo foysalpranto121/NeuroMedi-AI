@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuroMedi AI · Dr. Kuttu</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+
+  <div class="header">
+    <div class="lady-avatar">
+      <svg viewBox="0 0 44 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="44" height="48" fill="#fce7f3"/>
+        <ellipse cx="22" cy="16" rx="10" ry="11" fill="#fdbcb4"/>
+        <path d="M12 14 Q10 6 22 5 Q34 4 32 14" fill="#5b21b6"/>
+        <ellipse cx="22" cy="15" rx="10.5" ry="5" fill="#5b21b6"/>
+        <path d="M15 14 Q13 8 22 7 Q31 6 29 14" fill="#7c3aed"/>
+        <circle cx="17" cy="17" r="1.2" fill="#1e1b4b"/>
+        <circle cx="27" cy="17" r="1.2" fill="#1e1b4b"/>
+        <circle cx="17.4" cy="16.6" r="0.4" fill="#fff"/>
+        <circle cx="27.4" cy="16.6" r="0.4" fill="#fff"/>
+        <ellipse cx="16" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/>
+        <ellipse cx="28" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/>
+        <path d="M19.5 21 Q22 23 24.5 21" stroke="#c4547a" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M12 27 Q10 40 5 48 L39 48 Q34 40 32 27 Q27 30 22 30 Q17 30 12 27Z" fill="#7c3aed"/>
+        <rect x="18" y="27" width="8" height="5" rx="2" fill="#fdbcb4"/>
+        <path d="M16 30 Q22 34 28 30" fill="#6d28d9"/>
+        <rect x="8" y="32" width="6" height="14" rx="3" fill="#fdbcb4" transform="rotate(-8,8,32)"/>
+        <rect x="30" y="32" width="6" height="14" rx="3" fill="#fdbcb4" transform="rotate(8,36,32)"/>
+      </svg>
+    </div>
+    <div class="hinfo">
+      <h2>NeuroMedi AI</h2>
+      <p><span class="hdot"></span>Dr. Kuttu · Medical assistant</p>
+    </div>
+    <div class="hbtns">
+      <button class="hbtn" onclick="clearChat()" title="Clear chat">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      </button>
+      <button class="hbtn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="tIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="color-bar"></div>
+
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="wicons">
+        <div class="wicon purple">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="wicon teal">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="wicon pink">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+      </div>
+      <h3>Hi, I'm Dr. Kuttu!</h3>
+      <p>Your AI medical assistant. Ask me about symptoms,<br>medications, or any health concerns.</p>
+    </div>
+  </div>
+
+  <div class="chips">
+    <div class="chip" onclick="sendChip(this)">Symptoms of diabetes</div>
+    <div class="chip teal" onclick="sendChip(this)">How does ibuprofen work?</div>
+    <div class="chip pink" onclick="sendChip(this)">Signs of high blood pressure</div>
+    <div class="chip" onclick="sendChip(this)">Common cold remedies</div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" placeholder="Ask Dr. Kuttu a health question..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="send-btn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+  <div class="footer-note">NeuroMedi AI · For informational purposes only</div>
+</div>
+</div>
+
+<script>
+let dark = false;
+const ladySvg = `<svg viewBox="0 0 44 48" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="44" height="48" fill="#fce7f3"/><ellipse cx="22" cy="16" rx="10" ry="11" fill="#fdbcb4"/><path d="M12 14 Q10 6 22 5 Q34 4 32 14" fill="#5b21b6"/><ellipse cx="22" cy="15" rx="10.5" ry="5" fill="#5b21b6"/><path d="M15 14 Q13 8 22 7 Q31 6 29 14" fill="#7c3aed"/><circle cx="17" cy="17" r="1.2" fill="#1e1b4b"/><circle cx="27" cy="17" r="1.2" fill="#1e1b4b"/><circle cx="17.4" cy="16.6" r="0.4" fill="#fff"/><circle cx="27.4" cy="16.6" r="0.4" fill="#fff"/><ellipse cx="16" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/><ellipse cx="28" cy="18.5" rx="2" ry="1.2" fill="#f9a8d4" opacity=".5"/><path d="M19.5 21 Q22 23 24.5 21" stroke="#c4547a" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M12 27 Q10 40 5 48 L39 48 Q34 40 32 27 Q27 30 22 30 Q17 30 12 27Z" fill="#7c3aed"/><rect x="18" y="27" width="8" height="5" rx="2" fill="#fdbcb4"/><path d="M16 30 Q22 34 28 30" fill="#6d28d9"/></svg>`;
+
+function toggleTheme() {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  document.getElementById('tIcon').innerHTML = dark
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function getTime() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function removeWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+}
+
+const bubbleColors = ['', 'teal-bubble', 'pink-bubble'];
+let colorIdx = 0;
+
+function appendMsg(text, who) {
+  const box = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + who;
+  let avatarHtml = '';
+  if (who === 'bot') {
+    avatarHtml = `<div class="mavatar">${ladySvg}</div>`;
+    colorIdx = (colorIdx + 1) % 3;
+  } else {
+    avatarHtml = `<div class="uavatar"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+  }
+  const cls = who === 'bot' ? bubbleColors[colorIdx] : '';
+  row.innerHTML = `${avatarHtml}<div><div class="bubble ${cls}">${text}</div><div class="meta">${getTime()}</div></div>`;
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typing';
+  row.innerHTML = `<div class="mavatar">${ladySvg}</div><div class="bubble" style="padding:12px 16px"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function sendChip(el) {
+  document.getElementById('userInput').value = el.textContent;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+  removeWelcome();
+  appendMsg(text, 'user');
+  input.value = '';
+  input.style.height = 'auto';
+  showTyping();
+  try {
+    const res = await fetch('/get', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'msg=' + encodeURIComponent(text)
+    });
+    const data = await res.text();
+    removeTyping();
+    appendMsg(data, 'bot');
+  } catch (e) {
+    removeTyping();
+    appendMsg('Sorry, I could not connect. Please make sure Flask is running.', 'bot');
+  }
+}
+
+function clearChat() {
+  colorIdx = 0;
+  document.getElementById('messages').innerHTML = `<div class="welcome" id="welcome"><div class="wicons"><div class="wicon purple"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="wicon teal"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="wicon pink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div></div><h3>Hi, I'm Dr. Kuttu!</h3><p>Your AI medical assistant. Ask me about symptoms,<br>medications, or any health concerns.</p></div>`;
+}
+</script>
+</body>
+</html>
