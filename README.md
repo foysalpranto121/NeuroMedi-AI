@@ -105,8 +105,10 @@ NeuroMedi-AI/
 
 ```bash
 git clone https://github.com/foysalpranto121/NeuroMedi-AI.git
-cd NeuroMedi-AI/NeuroMedi-AI
+cd NeuroMedi-AI
 ```
+
+**Note**: The main application files are in the `NeuroMedi-AI` subdirectory.
 
 ### Step 2: Create Virtual Environment
 
@@ -162,7 +164,23 @@ python store_index.py
 
 ### Running the Application
 
+**Option 1: Using the launcher scripts (Recommended)**
+
+For Windows Command Prompt:
 ```bash
+# From the root directory, double-click run.bat or run:
+run.bat
+```
+
+For Git Bash / Linux / macOS:
+```bash
+# From the root directory, run:
+./run.sh
+```
+
+**Option 2: Manual execution**
+```bash
+cd NeuroMedi-AI
 python app.py
 ```
 
