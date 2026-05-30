@@ -178,7 +178,19 @@ For Git Bash / Linux / macOS:
 ./run.sh
 ```
 
-**Option 2: Manual execution**
+**Option 2: Using Python launcher directly**
+```bash
+# From the root directory, run:
+python launcher.py
+```
+
+**Option 3: VS Code (with launch configuration)**
+1. Open the project in VS Code
+2. Press F5 or go to Run and Debug
+3. Select "Run Flask App"
+4. The app will start in the integrated terminal
+
+**Option 4: Manual execution**
 ```bash
 cd NeuroMedi-AI
 python app.py

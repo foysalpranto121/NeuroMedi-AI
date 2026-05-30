@@ -103,4 +103,7 @@ def clear_chat():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port= 8080, debug= True, use_reloader=False)
+    import os
+    # Use stat reloader instead of watchdog for Windows compatibility
+    os.environ['FLASK_RUN_RELOAD_TYPE'] = 'stat'
+    app.run(host="0.0.0.0", port= 8080, debug= True)
